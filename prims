@@ -1,0 +1,86 @@
+#include<iostream>
+#include<string>
+#define max 100
+using namespace std;
+int adj[max][max];
+int visited[max];
+int n;
+string city[max];
+int index(string c){
+    for(int i=0;i<n;i++){
+        if(city[i]==c){
+            return i;
+        }
+    }
+    return -1;
+}
+void prims(string start){
+    for(int i=0;i<n;i++){
+        visited[i]=0;
+    }
+    int startvertex=index(start);
+    if(startvertex==-1){
+        cout<<"city not found\n";
+        return;
+    }
+    visited[startvertex]=1;
+    int total=0;
+    cout<<"MST\n";
+    for(int count=0;count<n-1;count++){
+        int minwt=999;
+        int a=-1;
+        int b=-1;
+        for(int i=0;i<n;i++){
+            if(visited[i]==1){
+                for(int j=0;j<n;j++){
+                    if(visited[j]==0 && adj[i][j]!=0 && adj[i][j]<minwt){
+                        minwt=adj[i][j];
+                        a=i;
+                        b=j;
+                    }
+                }
+            }
+        }
+        if(a==-1 || b==-1){
+            break;
+        }
+        cout<<city[a]<<' '<<city[b]<<'-'<<minwt<<endl;
+        total+=minwt;
+        visited[b]=1;
+        
+    }
+    cout<<"total weight"<<total;
+
+}
+int main(){
+    int m;
+    string start;
+    cout<<"no of city";
+    cin>>n;
+    cout<<"\n name of city";
+    for(int i=0;i<n;i++){
+        cin>>city[i];
+    }
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            adj[i][j]=0;
+        }
+    }
+    cout<<"enter no of paths";
+    cin>>m;
+    cout<<"start end weight";
+    for(int i=0;i<m;i++){
+        string s,e;
+        int d;
+        cin>>s>>e>>d;
+        int si=index(s);
+        int ei=index(e);
+        adj[si][ei]=d;
+        adj[ei][si]=d;
+
+    }
+    cout<<"strat city\n";
+    cin>>start;
+    prims(start);
+    return 0;
+}
