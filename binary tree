@@ -1,0 +1,252 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class FamilyTree {
+public:
+    string name;
+    int age;
+    FamilyTree* left;  // Left child (first child in the family)
+    FamilyTree* right; // Right child (second child in the family)
+
+    FamilyTree(string n, int a) {
+        name = n;
+        age = a;
+        left = nullptr;
+        right = nullptr;
+    }
+
+    // Insert family member by choosing left or right child
+    void insert(FamilyTree* root, string n, int a) {
+        char c;
+        cout << "Enter whether you want to insert to the left or right child (l/r): ";
+        cin >> c;
+        FamilyTree* newNode = new FamilyTree(n, a);
+        if (c == 'l' || c == 'L') {
+            if (root->left == nullptr) {
+                root->left = newNode;
+            } else {
+                insert(root->left, n, a);
+            }
+        } else if (c == 'r' || c == 'R') {
+            if (root->right == nullptr) {
+                root->right = newNode;
+            } else {
+                insert(root->right, n, a);
+            }
+        }
+    }
+
+    // Display members' names and ages in Inorder (Recursive)
+    void display_Inorder(FamilyTree* root) {
+        if (root == nullptr)
+            return;
+        display_Inorder(root->left);
+        cout << root->name << " (" << root->age << " years old)" << endl;
+        display_Inorder(root->right);
+    }
+
+    // Display members' names and ages in Preorder (Recursive)
+    void display_preorder(FamilyTree* root) {
+        if (root == nullptr)
+            return;
+        cout << root->name << " (" << root->age << " years old)" << endl;
+        display_preorder(root->left);
+        display_preorder(root->right);
+    }
+
+    // Display members' names and ages in Postorder (Recursive)
+    void display_postorder(FamilyTree* root) {
+        if (root == nullptr)
+            return;
+        display_postorder(root->left);
+        display_postorder(root->right);
+        cout << root->name << " (" << root->age << " years old)" << endl;
+    }
+
+    // Display number of family members
+    int display_count(FamilyTree* root) {
+        if (root == nullptr)
+            return 0;
+        return 1 + display_count(root->left) + display_count(root->right);
+    }
+
+    // Display leaf members (members with no children)
+    void leaf_node(FamilyTree* root) {
+        if (root == nullptr)
+            return;
+        if (root->left == nullptr && root->right == nullptr) {
+            cout << root->name << " (" << root->age << " years old)" << endl;
+            return;
+        }
+        leaf_node(root->left);
+        leaf_node(root->right);
+    }
+
+    // Display height of family tree (longest path to leaf node)
+    int height(FamilyTree* root) {
+        if (root == nullptr)
+            return 0;
+        int leftHeight = height(root->left);
+        int rightHeight = height(root->right);
+        return 1 + max(leftHeight, rightHeight);
+    }
+
+    // Function to find and display the sibling of a given node.
+    void display_sibling(FamilyTree* root, string name) {
+        if (root == nullptr) return;
+
+        if (root->left && root->left->name == name) {
+            if (root->right != nullptr)
+                cout << "Sibling: " << root->right->name << " (" << root->right->age << " years old)" << endl;
+            else
+                cout << "No sibling found." << endl;
+        } else if (root->right && root->right->name == name) {
+            if (root->left != nullptr)
+                cout << "Sibling: " << root->left->name << " (" << root->left->age << " years old)" << endl;
+            else
+                cout << "No sibling found." << endl;
+        } else {
+            display_sibling(root->left, name);
+            display_sibling(root->right, name);
+        }
+    }
+
+    // Function to display ascenders (ancestors) of a given node.
+    bool display_ascenders(FamilyTree* root, string name) {
+        if (root == nullptr) return false;
+
+        if (root->name == name) {
+            cout << "Ascenders: ";
+            return true; // Found the node, start printing the path.
+        }
+
+        // Search in the left subtree.
+        if (display_ascenders(root->left, name) || display_ascenders(root->right, name)) {
+            cout << root->name << " (" << root->age << " years old) <- ";  // Print the current node as an ascender.
+            return true;
+        }
+
+        return false;
+    }
+
+    // Function to display descendants of a given node.
+    void display_descendants(FamilyTree* root, string name) {
+        if (root == nullptr) return;
+
+        if (root->name == name) {
+            cout << "Descendants of " << root->name << " (" << root->age << " years old): ";
+            print_descendants(root); // Print all descendants of this node.
+        } else {
+            display_descendants(root->left, name);
+            display_descendants(root->right, name);
+        }
+    }
+
+    // Helper function to print all descendants of a node.
+    void print_descendants(FamilyTree* root) {
+        if (root == nullptr) return;
+        cout << root->name << " (" << root->age << " years old) ";
+        print_descendants(root->left);
+        print_descendants(root->right);
+    }
+};
+
+int main() {
+    int ch, age;
+    string name;
+    FamilyTree* root = nullptr;
+    do {
+        cout << "\n1. Create a new family member\n2. Insert a family member\n3. Display Preorder (Recursive)\n4. Display Inorder (Recursive)\n5. Display Postorder (Recursive)";
+        cout << "\n6. Display number of members\n7. Display leaf members\n8. Display height of family tree";
+        cout << "\n9. EXIT\n10. Display sibling of a family member\n11. Display ascenders of a family member\n12. Display descendants of a family member\nEnter your choice: ";
+        cin >> ch;
+        switch (ch) {
+            case 1:
+                cout << "Enter the name of the family member: ";
+                cin >> name;
+                cout << "Enter the age of the family member: ";
+                cin >> age;
+                if (root == nullptr)
+                    root = new FamilyTree(name, age);
+                else
+                    cout << "Root already exists!" << endl;
+                break;
+            case 2:
+                if (root != nullptr) {
+                    cout << "Enter the name of the family member: ";
+                    cin >> name;
+                    cout << "Enter the age of the family member: ";
+                    cin >> age;
+                    root->insert(root, name, age);
+                } else {
+                    cout << "Create the root member first!" << endl;
+                }
+                break;
+            case 3:
+                if (root != nullptr)
+                    root->display_preorder(root);
+                else
+                    cout << "Family tree is empty!" << endl;
+                break;
+            case 4:
+                if (root != nullptr)
+                    root->display_Inorder(root);
+                else
+                    cout << "Family tree is empty!" << endl;
+                break;
+            case 5:
+                if (root != nullptr)
+                    root->display_postorder(root);
+                else
+                    cout << "Family tree is empty!" << endl;
+                break;
+            case 6:
+                cout << "Number of members: " << root->display_count(root) << endl;
+                break;
+            case 7:
+                cout << "Leaf members: " << endl;
+                root->leaf_node(root);
+                break;
+            case 8:
+                cout << "Height of family tree: " << root->height(root) << endl;
+                break;
+            case 9:
+                cout << "Exiting!!!" << endl;
+                break;
+            case 10:
+                if (root != nullptr) {
+                    cout << "Enter the name of the family member to find the sibling: ";
+                    cin >> name;
+                    root->display_sibling(root, name);
+                } else {
+                    cout << "Family tree is empty!" << endl;
+                }
+                break;
+            case 11:
+                if (root != nullptr) {
+                    cout << "Enter the name of the family member to find the ascenders: ";
+                    cin >> name;
+                    if (!root->display_ascenders(root, name)) {
+                        cout << "No ascenders found for " << name << endl;
+                    }
+                } else {
+                    cout << "Family tree is empty!" << endl;
+                }
+                break;
+            case 12:
+                if (root != nullptr) {
+                    cout << "Enter the name of the family member to find the descendants: ";
+                    cin >> name;
+                    root->display_descendants(root, name);
+                } else {
+                    cout << "Family tree is empty!" << endl;
+                }
+                break;
+            default:
+                cout << "Invalid choice!" << endl;
+                break;
+        }
+    } while (ch != 9);
+    return 0;
+}
