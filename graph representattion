@@ -1,0 +1,95 @@
+#include<iostream>
+#include<string>
+#define MAX 100
+using namespace std;
+int adj[MAX][MAX];
+string cities[MAX];
+int n;
+int index(string c){
+    for(int i=0;i<n;i++){
+        if(cities[i]==c){
+            return i;
+        }
+    }
+    return -1;
+}
+class node{
+    public:
+    int vertex,weight;
+    node *next=NULL;
+    node(int v,int w){
+        vertex=v;
+        weight=w;
+        next=NULL;
+    }
+    
+
+};
+int main(){
+    
+    int m;
+    cout<<"enter number of cities";
+    cin>>n;
+    node *adjlist[MAX] = {};  // This ensures all elements are nullptr
+
+    cout<<"enter no of edges";
+
+    cin>>m;
+    cout<<"enter city name";
+    for(int i=0;i<n;i++){
+        cin>>cities[i];
+    }
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+        adj[i][j]=0;
+    }}
+
+   // cout<<"start end weight";
+    for(int i=0;i<m;i++){
+        
+    cout<<"start end weight";
+        string s,e;
+        int d;
+        cin>>s>>e>>d;
+        int si=index(s);
+        int ei=index(e);
+        adj[si][ei]=d;
+        adj[ei][si]=d;
+        node *newnode=new node(ei,d);
+        newnode->next=adjlist[si];
+        adjlist[si]=newnode;
+        newnode= new node(si,d);
+        newnode->next=adjlist[ei];
+        adjlist[ei]=newnode;
+
+
+
+    }
+    
+    
+    cout << "\nAdjacency Matrix:\n\t";
+    for (int i = 0; i < n; i++) {
+        cout << cities[i] << "\t";
+    }
+    cout << "\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << cities[i] << "\t";
+        for (int j = 0; j < n; j++) {
+            cout << adj[i][j] << "\t";
+        }
+        cout << "\n";
+    }
+    for(int i=0;i<n;i++)
+    {
+        node *temp=adjlist[i];
+        cout<<cities[i]<<"\t";
+        while(temp!=NULL){
+            cout<<cities[temp->vertex]<<"-"<<temp->weight<<"\t";
+            temp=temp->next;
+        }
+        cout<<"\n";
+    }
+    
+    return 0;
+}
