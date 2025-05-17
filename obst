@@ -1,0 +1,100 @@
+#include <iostream>
+using namespace std;
+
+void computeWeight(float p[], float q[], float weight[20][20], int n) {
+    for (int i = 0; i <= n; i++) {
+        weight[i][i] = q[i];
+        for (int j = i + 1; j <= n; j++) {
+            weight[i][j] = weight[i][j - 1] + p[j] + q[j];
+        }
+    }
+}
+
+void computeCost(float weight[20][20], float cost[20][20], int root[20][20], int n) {
+    for (int i = 0; i <= n; i++) {
+        cost[i][i] = 0;
+        root[i][i] = 0;
+    }
+
+    for (int l = 1; l <= n; l++) {
+        for (int i = 0; i <= n - l; i++) {
+            int j = i + l;
+            cost[i][j] = 1e9;
+            for (int r = i + 1; r <= j; r++) {
+                float temp = cost[i][r - 1] + cost[r][j] + weight[i][j];
+                if (temp < cost[i][j]) {
+                    cost[i][j] = temp;
+                    root[i][j] = r;
+                }
+            }
+        }
+    }
+}
+
+void printPreorder(int root[20][20], int i, int j, int key[]) {
+    int r = root[i][j];
+    if (r == 0) return;
+
+    cout << key[r] << " ";                     // Root node
+    printPreorder(root, i, r - 1, key);        // Left subtree
+    printPreorder(root, r, j, key);            // Right subtree
+}
+
+int main() {
+    int n;
+    int key[20];
+    float p[20], q[20];
+    float weight[20][20] = {0}, cost[20][20] = {0};
+    int root[20][20] = {0};
+
+    cout << "Enter number of keys: ";
+    cin >> n;
+
+    cout << "Enter " << n << " keys (in sorted order): ";
+    for (int i = 1; i <= n; i++) {
+        cin >> key[i];
+    }
+
+    cout << "Enter probabilities p[1] to p[" << n << "] (successful searches): ";
+    for (int i = 1; i <= n; i++) {
+        cin >> p[i];
+    }
+
+    cout << "Enter probabilities q[0] to q[" << n << "] (unsuccessful searches): ";
+    for (int i = 0; i <= n; i++) {
+        cin >> q[i];
+    }
+
+    computeWeight(p, q, weight, n);
+    computeCost(weight, cost, root, n);
+
+    cout << "\nCost Matrix:\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            cout << cost[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nRoot Matrix:\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            cout << root[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nWeight Matrix:\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            cout << weight[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nPreorder Traversal of Optimal BST:\n";
+    printPreorder(root, 0, n, key);
+    cout << endl;
+
+    return 0;
+}
