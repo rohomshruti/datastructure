@@ -1,36 +1,36 @@
 #include <iostream>
 using namespace std;
 
-class MinHeap {
+class MaxHeap {
     int heap[100];  // Static array to hold the heap
     int size;
 
     void heapifyUp(int index) {
         int parent = (index - 1) / 2;
-        if (index > 0 && heap[parent] > heap[index]) {
+        if (index > 0 && heap[parent] < heap[index]) {
             swap(heap[parent], heap[index]);
             heapifyUp(parent);
         }
     }
 
     void heapifyDown(int index) {
+        int largest = index;
         int left = 2 * index + 1;
         int right = 2 * index + 2;
-        int smallest = index;
 
-        if (left < size && heap[left] < heap[smallest])
-            smallest = left;
-        if (right < size && heap[right] < heap[smallest])
-            smallest = right;
+        if (left < size && heap[left] > heap[largest])
+            largest = left;
+        if (right < size && heap[right] > heap[largest])
+            largest = right;
 
-        if (smallest != index) {
-            swap(heap[index], heap[smallest]);
-            heapifyDown(smallest);
+        if (largest != index) {
+            swap(heap[index], heap[largest]);
+            heapifyDown(largest);
         }
     }
 
 public:
-    MinHeap() {
+    MaxHeap() {
         size = 0;
     }
 
@@ -65,11 +65,11 @@ public:
 };
 
 int main() {
-    MinHeap h;
+    MaxHeap h;
     h.insert(10);
     h.insert(5);
     h.insert(20);
-    h.insert(3);
+    h.insert(30);
 
     h.display();
 
