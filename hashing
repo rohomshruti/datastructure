@@ -1,0 +1,189 @@
+#include<iostream>
+#include<string>
+using namespace std;
+const int n=10;
+class musictrack{
+    public:
+    int id;
+    string track;
+    string album;
+};
+class hashtable{
+    public:
+   
+    musictrack table[100];
+    int empty[100];
+    hashtable(){
+        
+        for(int i=0;i<n;i++){
+            empty[i]=-1;
+
+        }
+    }
+    int hashfunction(int id){
+        return id % n;
+
+    }
+    void insert(int id, string track, string album) {
+        int index = hashfunction(id);
+        int originalIndex = index;
+    
+        // Check if the original index is empty or marked deleted
+        if (empty[index] == -1 || empty[index] == 2) {
+            table[index].id = id;
+            table[index].track = track;
+            table[index].album = album;
+            empty[index] = 1;  // Mark as occupied
+            cout << "Inserted at index " << index << endl;
+            return;
+        }
+    
+        cout << "Collision occurred at index " << index << endl;
+    
+        // Linear probing using for loop
+        for (int i = 1; i < n; i++) {
+            index = (originalIndex + i) % n;
+    
+            if (empty[index] == -1 || empty[index] == 2) {
+                table[index].id = id;
+                table[index].track = track;
+                table[index].album = album;
+                empty[index] = 1;  // Mark as occupied
+                cout << "Inserted at index " << index << endl;
+                return;
+            }
+    
+            cout << "Collision occurred at index " << index << endl;
+        }
+    
+        cout << "Hash table is full\n";
+    }
+    
+    void search(int id) {
+        int index = hashfunction(id);
+    
+        for (int i = 0; i < n; i++) {
+            // Linear probing: calculate the next index
+            int newIndex = (index + i) % n;
+    
+            // Stop if slot was never filled
+            if (empty[newIndex] == -1) break;
+    
+            // Check if slot is occupied (1) and ID matches
+            if (empty[newIndex] == 1 && table[newIndex].id == id) {
+                cout << "Track found:\n";
+                cout << "ID: " << table[newIndex].id << ", Track: " << table[newIndex].track << ", Album: " << table[newIndex].album << endl;
+                return;
+            }
+        }
+    
+        cout << "Track not found.\n";
+    }
+    void update(int id,  string newTrack, string newAlbum) {
+        int index = hashfunction(id);
+    
+        for (int i = 0; i < n; i++) {
+            int newIndex = (index + i) % n; // Calculate the next index
+    
+            // Stop if slot was never filled
+            if (empty[newIndex] == -1) break;
+    
+            // If occupied and ID matches
+            if (empty[newIndex] == 1 && table[newIndex].id == id) {
+                table[newIndex].track = newTrack;
+                table[newIndex].album = newAlbum;
+                cout << "Track updated at index " << newIndex << endl;
+                return;
+            }
+        }
+    
+        cout << "Track with ID " << id << " not found for update.\n";
+    }
+    void deletes(int id) {
+        int index = hashfunction(id);
+    
+        for (int i = 0; i < n; i++) {
+            int newIndex = (index + i) % n; // Calculate the next index
+    
+            // Stop if slot was never used
+            if (empty[newIndex] == -1) break;
+    
+            // If occupied and ID matches
+            if (empty[newIndex] == 1 && table[newIndex].id == id) {
+                empty[newIndex] = 2; // Mark as deleted
+                cout << "Track with ID " << id << " deleted from index " << newIndex << endl;
+                return;
+            }
+        }
+    
+        cout << "Track with ID " << id << " not found for deletion.\n";
+    }
+    void display() {
+        for (int i = 0; i < n; i++) {
+            if (empty[i] == -1) {
+                cout << i << "  -  Empty" << endl;
+            }
+            else if (empty[i] == 2) {
+                cout << i << "  -  Deleted" << endl;
+            }
+            else if (empty[i] == 1) {
+                
+                cout << i << "  - " << table[i].id << " | " << table[i].track << " | " << table[i].album << endl;
+            }
+        }
+    }
+    
+    
+
+    
+
+    
+    
+};
+int main(){
+    hashtable h;
+    int ch;
+    do{
+    cout<<"enter choice\n1.insert \n2.search\n3.update\n4.delete\n5.display";
+    cin>>ch;
+    int id;
+    string track;
+    string album;
+    switch(ch){
+        case 1:cout<<"enter music id";
+        cin>>id;
+        cout<<"enter music track";
+        cin>>track;
+        cout<<"enter music album";
+        cin>>album;
+        h.insert(id,track,album);
+        break;
+        case 2:cout<<"enter id to search";
+        cin>>id;
+        h.search(id);
+
+        break;
+        case 3:cout<<"enter music id to update";
+        cin>>id;
+        cout<<"enter new music track";
+        cin>>track;
+        cout<<"enter new music album";
+        cin>>album;
+        h.update(id,track,album);
+
+        break;
+        case 4:cout<<"enter music id to delete";
+        cin>>id;
+        h.deletes(id);
+        break;
+        case 5:h.display();
+        break;
+        case 6:cout<<"-----EXIT--------";
+        break;
+        default:cout<<"wrong choice";
+        break;
+
+    }
+    }while(ch!=6);
+    return 0;
+}
