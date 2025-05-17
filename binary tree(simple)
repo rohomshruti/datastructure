@@ -1,0 +1,167 @@
+#include <iostream>
+using namespace std;
+
+class BT {
+public:
+int data;
+BT* left;
+BT* right;
+
+BT(int x) {
+data = x;
+left = nullptr;
+right = nullptr;
+}
+ void insert(BT* root, int x) {
+        char c;
+        cout << "Enter whether you want to insert at left or right: ";
+        cin >> c;
+        BT* newNode = new BT(x);
+        
+        if (c=='l' || c=='L') {
+            if (root->left== nullptr) {
+                root->left= newNode;
+            } else {
+                insert(root->left, x);
+            }
+        } else if (c=='r' || c=='R') {
+            if (root->right== nullptr) {
+                root->right= newNode;
+            } else {
+                insert(root->right, x);
+}
+}
+}
+void display_Inorder(BT* root) {
+        if (root== nullptr)
+            return;
+        
+        display_Inorder(root->left);
+        cout<< root->data << " ";
+        display_Inorder(root->right);
+    }
+void display_postorder(BT* root) {
+        if (root== nullptr)
+            return;
+        
+        display_postorder(root->left);
+       
+        display_postorder(root->right);
+         cout<<root->data << " ";
+    }
+void display_preorder(BT* root) {
+        if (root== nullptr)
+            return;
+       cout<<root->data << " ";
+        display_preorder(root->left);
+        display_preorder(root->right);
+        
+    }
+int display_count(BT* root) {
+
+        if (root== nullptr){
+            return 0;
+            }
+        
+        return 1 +display_count(root->left)+display_count(root->right);
+        
+        
+        
+        }
+void leaf_node(BT* root){
+        if (root== nullptr)
+        return ;
+        if(root->left==nullptr && root->right==nullptr)
+        {
+        cout<<root->data<<" ";
+        return;
+        }
+        leaf_node(root->left);
+        leaf_node(root->right);
+
+}
+void search(BT *root,int c){
+    if(root==NULL){
+        return;
+    }
+    if(root->x==c){
+        cout<<"found";
+        return;
+    }
+    search(root->left);
+    search(root->right);
+}
+    
+};
+
+int main() {
+int ch, data;
+BT* root= nullptr;
+    
+do {
+cout << "\n1. Create a new node\n2. Insert the data\n3. Display  Preorder tree\n4.Display Inorder tree\n5.Display Postorder tree\n6.Display number of node present\n7.Number of leaf node\n8. EXIT\nEnter your choice: ";
+cin >> ch;
+switch (ch) {
+case 1:
+cout << "Enter the data you want to insert: ";
+cin >> data;
+if (root == nullptr)
+root = new BT(data);
+else
+cout << "Root already exists!";
+break;
+case 2:
+if (root != nullptr) {
+cout << "Enter the data you want to insert: ";
+cin >> data;
+root->insert(root, data);
+} else {
+cout << "Create the root node first!";
+}
+break;
+            
+case 3:
+if (root != nullptr)
+root->display_preorder(root);
+else
+cout << "Tree is empty!";
+cout << endl;
+break;
+case 4:
+if (root != nullptr)
+root->display_Inorder(root);
+else
+cout << "Tree is empty!";
+cout << endl;
+break;
+case 5:
+if (root != nullptr)
+root->display_postorder(root);
+else
+cout << "Tree is empty!";
+cout << endl;
+break;
+
+case 6:
+cout<<"enter data";
+cin>>data;
+root->search(root,data);
+break;   
+case 7:
+if (root != nullptr)
+root->leaf_node(root);
+else
+cout << "Tree is empty!";
+cout << endl;      
+case 8:
+cout << "Exiting!!!";
+ break;
+            
+default:
+ cout << "Invalid choice";
+break;
+        }
+    
+} while (ch != 8);
+return 0;
+}
