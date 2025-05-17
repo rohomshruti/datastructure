@@ -1,0 +1,124 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+int n; // global number of cities
+string city[100];
+
+int index(string c){
+    for(int i = 0; i < n; i++){
+        if(city[i] == c){
+            return i;
+        }
+    }
+    return -1;
+}
+
+class graph{
+public:
+    int distance[100];
+    int visited[100];
+    int matrix[100][100];
+
+    graph(){
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                matrix[i][j] = 0;
+            }
+        }
+        for(int i = 0; i < n; i++){
+            visited[i] = 0;
+            distance[i] = 999;
+        }
+    }
+
+    void addedge(int x, int y, int z){
+        matrix[x][y] = z;
+        matrix[y][x] = z;
+    }
+
+    void display(){
+        cout << "\nAdjacency Matrix:\n";
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                cout << matrix[i][j] << "\t";
+            }
+            cout << endl;
+        }
+    }
+
+    void dj(string start){
+        int current;
+        int startvertex = index(start);
+        visited[startvertex] = 1;
+        distance[startvertex] = 0;
+        current = startvertex;
+
+        for(int count = 0; count < n - 1; count++){
+            int min = 999;
+
+            // Relax edges from current vertex
+            for(int i = 0; i < n; i++){
+                if(matrix[current][i] != 0 && visited[i] == 0){
+                    int t = distance[current] + matrix[current][i];
+                    if(t < distance[i]){
+                        distance[i] = t;
+                    }
+                }
+            }
+
+            // Find the next vertex with the smallest tentative distance
+            for(int i = 0; i < n; i++){
+                if(visited[i] == 0 && distance[i] < min){
+                    min = distance[i];
+                    current = i;
+                }
+            }
+
+            visited[current] = 1;
+        }
+    }
+
+    void d(){
+        cout << "\nShortest distances from source:\n";
+        for(int i = 0; i < n; i++){
+            cout << city[i] << " : " << distance[i] << endl;
+        }
+    }
+};
+
+int main(){
+    int m;
+    string start;
+    cout << "Enter number of cities: ";
+    cin >> n;
+
+    graph g;
+
+    cout << "Enter names of cities:\n";
+    for(int i = 0; i < n; i++){
+        cin >> city[i];
+    }
+
+    cout << "Enter number of paths: ";
+    cin >> m;
+    for(int i = 0; i < m; i++){
+        string s, e;
+        int w;
+        cout << "Enter start city, end city, and weight: ";
+        cin >> s >> e >> w;
+        int si = index(s);
+        int ei = index(e);
+        g.addedge(si, ei, w);
+    }
+
+    g.display();
+
+    cout << "Enter start city for Dijkstra's algorithm: ";
+    cin >> start;
+
+    g.dj(start);
+    g.d();
+
+    return 0;
+}
